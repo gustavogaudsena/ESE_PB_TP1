@@ -1,0 +1,68 @@
+@startuml
+namespace Stockflow {
+
+    abstract class Item <<abstract>>  {
+       - id: Long
+       - name: string
+       - category: ItemCategory
+    }
+
+    class FoodItem extends Item {}
+    class CleaningItem extends Item {}
+    class HousewareItem extends Item {}
+    class ServiceItem extends Item {}
+
+    enum ItemCategory {
+        FOOD
+        CLEANING
+        HOUSEWARE
+        SERVICE
+    }
+
+    class ItemDTO {
+        - name: String
+        - category: ItemCategory
+    }
+
+    class ItemController {
+        - itemService : ItemService
+        + getAll(): ResponseEntity<List<Item>>
+        + getById(id: Long): ResponseEntity<Item>
+        + create(itemDto: ItemDTO): ResponseEntity<Item>
+        + update(Long id, itemDto: ItemDTO): ResponseEntity<Item>
+        + delete(id: Long): ResponseEntity<Object>
+    }
+
+    class ItemFactory <<Factory>> {
+        {static} + create(name: String, category: ItemCategory): Item
+    }
+
+    class ItemService {
+        - itemRepository : ItemRepository
+        + getAll(): List<Item>
+        + getById(id: Long): Optional<Item>
+        + create(itemDto: ItemDTO): Item
+        + update(Long id, itemDto: ItemDTO): Item
+        + delete(id: Long)
+     }
+
+    class ItemRepository {
+        - items : List<Item>
+        + getAll(): List<Item>
+        + getById(id: Long): Optional<Item>
+        + create(item: Item): Item
+        + update(item: Item): Item
+        + delete(id: Long)
+    }
+
+
+    ItemController ..> ItemService : uses
+    ItemService ..> ItemRepository : uses
+    ItemRepository "1" *-- "0..*" Item : manages
+    Item "1" *-- "1" ItemCategory : has
+    ItemController ..> ItemDTO : uses
+    ItemService ..> ItemDTO : uses
+    ItemService ..> ItemFactory : uses
+    ItemFactory ..> Item : <<create>>
+}
+@enduml
