@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -18,7 +19,7 @@ public class ProdutoService {
         return produtoRepository.findAll();
     }
 
-    public Optional<Produto> obterPorId(@PathVariable Long id) {
+    public Optional<Produto> obterPorId(@PathVariable UUID id) {
         return produtoRepository.findById(id);
     }
 
@@ -26,7 +27,7 @@ public class ProdutoService {
         return produtoRepository.save(produto);
     }
 
-    public void deletar(@PathVariable Long id) {
+    public void deletar(@PathVariable UUID id) {
         produtoRepository.deleteById(id);
     }
 }
