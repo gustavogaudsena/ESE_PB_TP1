@@ -26,9 +26,15 @@ public class ItemTransacao {
     @JoinColumn(name = "transacao_id", foreignKey = @ForeignKey(name = "fk_itens_transacao_transacao"))
     private Transacao transacao;
 
-    @Column(nullable = false, precision = 9, scale = 6)
+    @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal valor;
 
     @Column(nullable = false)
     private Integer quantidade;
+
+    @Transient
+    public BigDecimal getValorFinal() {
+        if (valor == null || quantidade == null) return BigDecimal.ZERO;
+        return valor.multiply(BigDecimal.valueOf(quantidade));
+    }
 }

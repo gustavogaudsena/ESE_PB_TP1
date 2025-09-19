@@ -20,4 +20,9 @@ public enum CategoriaDeProduto {
     public String getNomeExibicao() {
         return nomeExibicao;
     }
+
+    @Override
+    public String toString() {
+        return getNomeExibicao();
+    }
 }

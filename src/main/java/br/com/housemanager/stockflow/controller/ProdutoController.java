@@ -2,7 +2,8 @@ package br.com.housemanager.stockflow.controller;
 
 import br.com.housemanager.stockflow.model.Produto;
 import br.com.housemanager.stockflow.service.ProdutoService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,36 +13,43 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/produto")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ProdutoController {
-    private final ProdutoService produtoService;
+    private final ProdutoService service;
 
     @GetMapping
-    public ResponseEntity<List<Produto>> listar() {
-        return ResponseEntity.ok(produtoService.listar());
+    public ResponseEntity<List<Produto>> listar(
+            @RequestHeader(value = "X-Page", required = false, defaultValue = "0") int page,
+            @RequestHeader(value = "X-Size", required = false, defaultValue = "10") int size
+    ) {
+        Page<Produto> produtos = service.listar(page, size);
+
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(produtos.getTotalElements()))
+                .header("X-Total-Pages", String.valueOf(produtos.getTotalPages()))
+                .header("X-Page-Size", String.valueOf(size))
+                .body(produtos.getContent());
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Produto> obterPorId(@PathVariable UUID id) {
-        return produtoService.obterPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(service.obterPorId(id));
     }
 
     @PostMapping()
-    public ResponseEntity<Produto> create(@RequestBody Produto produto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(produtoService.salvar(produto));
+    public ResponseEntity<Produto> criar(@RequestBody Produto produto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.salvar(produto));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Produto> atualizar(@PathVariable UUID id, @RequestBody Produto produto) {
-        produto.setId(id);
-        return ResponseEntity.ok(produtoService.salvar(produto));
+        return ResponseEntity.ok(service.salvar(produto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deletar(@PathVariable UUID id) {
-        produtoService.deletar(id);
+        service.deletar(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

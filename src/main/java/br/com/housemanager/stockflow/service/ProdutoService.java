@@ -3,31 +3,43 @@ package br.com.housemanager.stockflow.service;
 import br.com.housemanager.stockflow.model.Produto;
 import br.com.housemanager.stockflow.repository.ProdutoRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class ProdutoService {
-    private final ProdutoRepository produtoRepository;
+    private final ProdutoRepository repository;
 
-    public List<Produto> listar() {
-        return produtoRepository.findAll();
+    public Page<Produto> listar(Integer page, Integer size) {
+        int p = page == null ? 0 : Math.max(0, page);
+        int s = size == null ? 0 : Math.max(1, size);
+        PageRequest pageRequest = PageRequest.of(p, s);
+        return repository.findAll(pageRequest);
     }
 
-    public Optional<Produto> obterPorId(@PathVariable UUID id) {
-        return produtoRepository.findById(id);
+    public Produto obterPorId(UUID id) {
+        return repository.findById(id).orElseThrow(() -> new NoSuchElementException("Transação não encontrada: " + id));
     }
 
-    public Produto salvar(@RequestBody Produto produto) {
-        return produtoRepository.save(produto);
+    public Produto salvar(Produto produto) {
+        return repository.save(produto);
     }
 
-    public void deletar(@PathVariable UUID id) {
-        produtoRepository.deleteById(id);
+    public Produto atualizar(UUID id, Produto produto) {
+        produto.setId(id);
+        return repository.save(produto);
+    }
+
+    public void deletar(UUID id) {
+        repository.deleteById(id);
+    }
+
+    public boolean existeProdutoPorId(UUID id) {
+        return repository.existsById(id);
     }
 }
