@@ -1,12 +1,12 @@
 package br.com.housemanager.stockflow.service;
 
 
-import br.com.housemanager.stockflow.model.ItemTransacao;
-import br.com.housemanager.stockflow.model.ItemTransacaoDTO;
-import br.com.housemanager.stockflow.model.Produto;
-import br.com.housemanager.stockflow.model.Transacao;
+import br.com.housemanager.stockflow.dto.ItemTransacaoDTO;
+import br.com.housemanager.stockflow.model.*;
 import br.com.housemanager.stockflow.repository.ProdutoRepository;
 import br.com.housemanager.stockflow.repository.TransacaoRepository;
+import jakarta.persistence.criteria.Join;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -27,13 +29,43 @@ public class TransacaoService {
     private final ProdutoRepository produtoRepository;
 
     @Transactional(readOnly = true)
-    public Page<Transacao> listar(Integer page, Integer size) {
+    public Page<Transacao> listar(TransacaoFiltro filtro, Integer page, Integer size) {
         int p = page == null ? 0 : Math.max(0, page);
         int s = size == null ? 0 : Math.max(1, size);
         PageRequest pageRequest = PageRequest.of(p, s);
 
+        List<Specification<Transacao>> specifications = new ArrayList<>();
 
-        return transacaoRepository.findAll(pageRequest);
+        if (filtro.status() != null) {
+            specifications.add((root, query, cb) -> cb.equal(root.get("status"), filtro.status()));
+        }
+        if (filtro.de() != null) {
+            specifications.add((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("criadoEm"), filtro.de()));
+        }
+        if (filtro.ate() != null) {
+            specifications.add((root, query, cb) -> cb.lessThanOrEqualTo(root.get("criadoEm"), filtro.ate()));
+        }
+        if (filtro.categoria() != null) {
+
+            specifications.add((root, query, cb) -> {
+                query.distinct(true);
+                Join<Transacao, ItemTransacao> joinItens = root.join("itensTransacao");
+
+                return cb.equal(joinItens.get("produto").get("categoria"), filtro.categoria());
+            });
+        }
+        if (filtro.valorTotalMin() != null) {
+            specifications.add((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("valorTotal"), filtro.valorTotalMin()));
+        }
+        if (filtro.valorTotalMax() != null) {
+            specifications.add((root, query, cb) -> cb.lessThanOrEqualTo(root.get("valorTotal"), filtro.valorTotalMax()));
+        }
+
+        Specification<Transacao> spec = specifications.stream()
+                .reduce(Specification::and)
+                .orElse(null);
+
+        return transacaoRepository.findAll(spec, pageRequest);
     }
 
     @Transactional(readOnly = true)
@@ -64,7 +96,7 @@ public class TransacaoService {
         Transacao transacao = obterPorId(transacaoId);
         ItemTransacao item = transacao.getItensTransacao()
                 .stream()
-                .filter(i -> i.getId().equals(itemId))
+                .filter(i -> i.getProduto().getId().equals(itemId))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("Item não encontrado na transação: " + itemId));
 

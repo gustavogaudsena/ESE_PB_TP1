@@ -1,0 +1,21 @@
+
+version: '3.8'
+
+services:
+  postgres-db:
+    image: postgres:16-alpine
+
+    container_name: dr1_crm
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: stockflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: no
+
+volumes:
+  postgres_data:

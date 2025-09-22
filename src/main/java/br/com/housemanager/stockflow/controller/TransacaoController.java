@@ -1,7 +1,8 @@
 package br.com.housemanager.stockflow.controller;
 
-import br.com.housemanager.stockflow.model.ItemTransacaoDTO;
+import br.com.housemanager.stockflow.dto.ItemTransacaoDTO;
 import br.com.housemanager.stockflow.model.Transacao;
+import br.com.housemanager.stockflow.model.TransacaoFiltro;
 import br.com.housemanager.stockflow.service.ProdutoService;
 import br.com.housemanager.stockflow.service.TransacaoService;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +23,11 @@ public class TransacaoController {
 
     @GetMapping
     public ResponseEntity<?> listar(
+            @ModelAttribute TransacaoFiltro filtro,
             @RequestHeader(value = "X-Page", required = false, defaultValue = "0") int page,
             @RequestHeader(value = "X-Size", required = false, defaultValue = "10") int size
     ) {
-        Page<Transacao> transacoes = service.listar(page, size);
+        Page<Transacao> transacoes = service.listar(filtro, page, size);
 
         return ResponseEntity.ok()
                 .header("X-Total-Count", String.valueOf(transacoes.getTotalElements()))
