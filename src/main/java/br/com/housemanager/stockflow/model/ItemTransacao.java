@@ -1,5 +1,6 @@
 package br.com.housemanager.stockflow.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ public class ItemTransacao {
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "transacao_id", foreignKey = @ForeignKey(name = "fk_itens_transacao_transacao"))
+    @JsonBackReference
     private Transacao transacao;
 
     @Column(nullable = false, precision = 19, scale = 2)

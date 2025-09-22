@@ -20,5 +20,6 @@ spring:
         hibernate.jdbc.time_zone: America/Sao_Paulo
     hibernate:
       ddl-auto: create-drop
+#      ddl-auto: none
 
 

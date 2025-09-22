@@ -1,5 +1,6 @@
 package br.com.housemanager.stockflow.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class Transacao {
     @GeneratedValue()
     private UUID id;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "transacao", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     List<ItemTransacao> itensTransacao = new ArrayList<>();
 

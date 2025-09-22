@@ -51,15 +51,15 @@ public class TransacaoController {
     }
 
     @DeleteMapping("/{transacaoId}/item/{itemId}")
-    public ResponseEntity<Transacao> removerItem(@PathVariable UUID transacaoId, @PathVariable UUID itemId) {
+    public ResponseEntity<Object> removerItem(@PathVariable UUID transacaoId, @PathVariable UUID itemId) {
         Transacao transacao = service.removerItemTransacao(transacaoId, itemId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(transacao);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("{transacaoId}/item/{itemId}")
     public ResponseEntity<Transacao> atualizarItemTransacao(@PathVariable UUID transacaoId, @PathVariable UUID itemId, @RequestBody ItemTransacaoDTO itemTransacao) {
         Transacao transacao = service.atualizarItemTransacao(transacaoId, itemId, itemTransacao);
-        return ResponseEntity.status(HttpStatus.CREATED).body(transacao);
+        return ResponseEntity.status(HttpStatus.OK).body(transacao);
     }
 
 
