@@ -3,6 +3,7 @@ package br.com.housemanager.stockflow.service;
 
 import br.com.housemanager.stockflow.dto.ItemTransacaoDTO;
 import br.com.housemanager.stockflow.model.*;
+import br.com.housemanager.stockflow.repository.ItemTransacaoRepository;
 import br.com.housemanager.stockflow.repository.ProdutoRepository;
 import br.com.housemanager.stockflow.repository.TransacaoRepository;
 import jakarta.persistence.criteria.Join;
@@ -26,6 +27,7 @@ import java.util.UUID;
 public class TransacaoService {
     private static final ZoneId ZONE_ZP = ZoneId.of("America/Sao_Paulo");
     private final TransacaoRepository transacaoRepository;
+    private final ItemTransacaoRepository itemTransacaoRepository;
     private final ProdutoRepository produtoRepository;
 
     @Transactional(readOnly = true)
@@ -74,7 +76,7 @@ public class TransacaoService {
     }
 
     @Transactional
-    public Transacao adicionarItemTransacao(UUID transacaoId, ItemTransacaoDTO dto) {
+    public ItemTransacao adicionarItemTransacao(UUID transacaoId, ItemTransacaoDTO dto) {
         Transacao transacao;
 
         Produto produto = produtoRepository.findById(dto.produtoId())
@@ -88,7 +90,12 @@ public class TransacaoService {
         item.setProduto(produto);
 
         transacao.adicionarItemTransacao(item);
-        return salvar(transacao);
+
+        item.setTransacao(transacao);
+        ItemTransacao itemSalvo = itemTransacaoRepository.save(item);
+        salvar(transacao);
+
+        return itemSalvo;
     }
 
     @Transactional
@@ -106,7 +113,7 @@ public class TransacaoService {
     }
 
     @Transactional
-    public Transacao atualizarItemTransacao(UUID transacaoId, @PathVariable UUID itemId, ItemTransacaoDTO dto) {
+    public ItemTransacao atualizarItemTransacao(UUID transacaoId, @PathVariable UUID itemId, ItemTransacaoDTO dto) {
         Transacao transacao = obterPorId(transacaoId);
 
         ItemTransacao item = transacao.getItensTransacao()
@@ -124,9 +131,9 @@ public class TransacaoService {
         if (dto.quantidade() != null) item.setQuantidade(dto.quantidade());
         if (dto.valor() != null) item.setValor(dto.valor());
 
-        transacao.calcularValorTotal();
+        salvar(transacao);
 
-        return salvar(transacao);
+        return item;
     }
 
     @Transactional
@@ -147,6 +154,7 @@ public class TransacaoService {
     public Transacao salvar(Transacao transacao) {
         if (transacao.getCriadoEm() == null) transacao.setCriadoEm(OffsetDateTime.now(ZONE_ZP));
         transacao.setAtualizadoEm(OffsetDateTime.now(ZONE_ZP));
+        transacao.calcularValorTotal();
 
         return transacaoRepository.save(transacao);
     }

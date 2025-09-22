@@ -1,6 +1,7 @@
 package br.com.housemanager.stockflow.controller;
 
 import br.com.housemanager.stockflow.dto.ItemTransacaoDTO;
+import br.com.housemanager.stockflow.model.ItemTransacao;
 import br.com.housemanager.stockflow.model.Transacao;
 import br.com.housemanager.stockflow.model.TransacaoFiltro;
 import br.com.housemanager.stockflow.service.ProdutoService;
@@ -47,9 +48,9 @@ public class TransacaoController {
     }
 
     @PostMapping("/{transacaoId}/item")
-    public ResponseEntity<Transacao> adicionarItem(@PathVariable UUID transacaoId, @RequestBody ItemTransacaoDTO itemTransacao) {
-        Transacao transacao = service.adicionarItemTransacao(transacaoId, itemTransacao);
-        return ResponseEntity.status(HttpStatus.CREATED).body(transacao);
+    public ResponseEntity<ItemTransacao> adicionarItem(@PathVariable UUID transacaoId, @RequestBody ItemTransacaoDTO itemTransacao) {
+        ItemTransacao item = service.adicionarItemTransacao(transacaoId, itemTransacao);
+        return ResponseEntity.status(HttpStatus.CREATED).body(item);
     }
 
     @DeleteMapping("/{transacaoId}/item/{itemId}")
@@ -59,9 +60,9 @@ public class TransacaoController {
     }
 
     @PatchMapping("{transacaoId}/item/{itemId}")
-    public ResponseEntity<Transacao> atualizarItemTransacao(@PathVariable UUID transacaoId, @PathVariable UUID itemId, @RequestBody ItemTransacaoDTO itemTransacao) {
-        Transacao transacao = service.atualizarItemTransacao(transacaoId, itemId, itemTransacao);
-        return ResponseEntity.status(HttpStatus.OK).body(transacao);
+    public ResponseEntity<ItemTransacao> atualizarItemTransacao(@PathVariable UUID transacaoId, @PathVariable UUID itemId, @RequestBody ItemTransacaoDTO itemTransacao) {
+        ItemTransacao item = service.atualizarItemTransacao(transacaoId, itemId, itemTransacao);
+        return ResponseEntity.status(HttpStatus.OK).body(item);
     }
 
 
