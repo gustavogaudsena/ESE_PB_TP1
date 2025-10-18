@@ -1,5 +1,6 @@
 package br.com.housemanager.stockflow.dto;
 
+
 import java.math.BigDecimal;
 import java.util.UUID;
 

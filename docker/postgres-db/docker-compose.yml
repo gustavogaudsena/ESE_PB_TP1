@@ -4,9 +4,7 @@ version: '3.8'
 services:
   postgres-db:
     image: postgres:16-alpine
-
-    container_name: dr1_crm
-
+    container_name: pb_tp2
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
