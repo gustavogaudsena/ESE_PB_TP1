@@ -1,0 +1,18 @@
+services:
+  consul:
+    image: hashicorp/consul:1.19
+    container_name: consul-src
+    command:
+      - agent
+      - -dev
+      - -ui
+      - -client=0.0.0.0
+      - -bind=0.0.0.0
+    ports:
+      - "8500:8500"
+      - "8600:8600"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost/v1/status/leader"]
+      interval: 5s
+      timeout: 2s
+      retries: 10

@@ -3,9 +3,18 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8000/realms/stockflow
+          issuer-uri: http://localhost:8000/realms/housemanager
   application:
     name: stockflow
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        register: true
+        prefer-ip-address: true
+        health-check-path: /actuator/health
+        health-check-interval: 5s
   datasource:
     url: jdbc:postgresql://localhost:5432/stockflow
     username: postgres
@@ -20,3 +29,5 @@ spring:
         hibernate.jdbc.time_zone: America/Sao_Paulo
     hibernate:
       ddl-auto: update
+server:
+  port: 8080

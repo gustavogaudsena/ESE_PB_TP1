@@ -36,6 +36,7 @@ public class ItemTransacao {
 
     @Transient
     public BigDecimal getValorFinal() {
+
         if (valor == null || quantidade == null) return BigDecimal.ZERO;
         return valor.multiply(BigDecimal.valueOf(quantidade));
     }

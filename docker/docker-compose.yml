@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgres-db:
     image: postgres:16-alpine
-    container_name: pb-pg
+    container_name: housemanager_pg
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
@@ -15,12 +15,33 @@ services:
     restart: no
   keycloak:
     image: quay.io/keycloak/keycloak:24.0
+    container_name: housemanager_keycloack
     command: start-dev
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
     ports:
       - 8000:8080
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+  consul:
+    image: hashicorp/consul:1.19
+    container_name: housemanager_consul
+    command:
+      - agent
+      - -dev
+      - -ui
+      - -client=0.0.0.0
+      - -bind=0.0.0.0
+    ports:
+      - "8500:8500"
+      - "8600:8600"
+    healthcheck:
+      test: [ "CMD", "curl", "-fsS", "http://localhost/v1/status/leader" ]
+      interval: 5s
+      timeout: 2s
+      retries: 10
 
 volumes:
   postgres_data:
+  keycloak_data:
