@@ -22,7 +22,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -31,3 +31,25 @@ spring:
       ddl-auto: update
 server:
   port: 8080
+
+
+resilience4j:
+  retry:
+    instances:
+      remoteCall:
+        maxAttempts: 3
+        waitDuration: 70ms
+  circuitbreaker:
+    instances:
+      remoteCall:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10ms
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+  timelimiter:
+    instances:
+      remoteCall:
+        timeoutDuration: 100ms
+        cancelRunningFuture: true

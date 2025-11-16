@@ -16,12 +16,16 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:24.0
     container_name: housemanager_keycloack
-    command: start-dev
+    command: ["start-dev", "--http-enabled=true", "--hostname-strict=false", "--hostname-strict-https=false"]
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_HTTP_ENABLED=true
+      - KC_HOSTNAME_STRICT=false
+      - KC_HOSTNAME_STRICT_HTTPS=false
     ports:
       - 8000:8080
+      - 8443:8443
     volumes:
       - keycloak_data:/opt/keycloak/data
   consul:
