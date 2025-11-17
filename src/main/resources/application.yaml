@@ -3,7 +3,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8000/realms/housemanager
+          issuer-uri: http://localhost:8000/realms/stockflow
   application:
     name: stockflow
   cloud:

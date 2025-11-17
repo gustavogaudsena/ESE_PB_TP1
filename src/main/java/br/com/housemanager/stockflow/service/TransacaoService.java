@@ -1,6 +1,7 @@
 package br.com.housemanager.stockflow.service;
 
 
+import br.com.housemanager.stockflow.dto.AiAnalyzedItem;
 import br.com.housemanager.stockflow.dto.ItemTransacaoDTO;
 import br.com.housemanager.stockflow.model.*;
 import br.com.housemanager.stockflow.repository.ItemTransacaoRepository;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -96,6 +98,33 @@ public class TransacaoService {
         salvar(transacao);
 
         return itemSalvo;
+    }
+
+    @Transactional
+    public Transacao adicionarTransacaoPorNota(List<AiAnalyzedItem> itens) {
+        Transacao transacao = new Transacao();
+
+        itens.forEach(i -> {
+
+            Produto produto = produtoRepository.findFirstByNome(i.getName()).orElse(null);
+
+            if (produto != null) {
+                produto.setNome(i.getName());
+                produto.setCategoria(CategoriaDeProduto.GENERICO);
+            }
+
+            produtoRepository.save(produto);
+            ItemTransacao item = new ItemTransacao();
+            item.setValor(BigDecimal.valueOf(i.getUnitPrice() != null ? i.getUnitPrice() : i.getTotalPrice()));
+            item.setQuantidade((int) Math.round(i.getQuantity()));
+            item.setProduto(produto);
+
+            transacao.adicionarItemTransacao(item);
+        });
+
+        salvar(transacao);
+
+        return transacao;
     }
 
     @Transactional

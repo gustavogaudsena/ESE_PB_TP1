@@ -1,5 +1,6 @@
 package br.com.housemanager.stockflow.controller;
 
+import br.com.housemanager.stockflow.dto.AiAnalyzedItem;
 import br.com.housemanager.stockflow.dto.ItemTransacaoDTO;
 import br.com.housemanager.stockflow.model.ItemTransacao;
 import br.com.housemanager.stockflow.model.Transacao;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -65,5 +67,10 @@ public class TransacaoController {
         return ResponseEntity.status(HttpStatus.OK).body(item);
     }
 
+    @PostMapping("/nota")
+    public ResponseEntity<Transacao> adicionarTransacaoPorNota(@RequestBody List<AiAnalyzedItem> itens) {
+        Transacao item = service.adicionarTransacaoPorNota(itens);
+        return ResponseEntity.status(HttpStatus.CREATED).body(item);
+    }
 
 }

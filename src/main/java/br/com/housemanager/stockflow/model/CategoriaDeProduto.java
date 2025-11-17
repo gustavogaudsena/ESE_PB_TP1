@@ -9,7 +9,8 @@ public enum CategoriaDeProduto {
     LIMPEZA("Material de Limpeza"),
     HIGIENE_PESSOAL("Higiene pessoal"),
     UTENSILIOS_DOMESTICOS("Utensílio Doméstico"),
-    SERVICOS("Serviços");
+    SERVICOS("Serviços"),
+    GENERICO("Genérico");
     private final String nomeExibicao;
 
     CategoriaDeProduto(String nomeExibicao) {
