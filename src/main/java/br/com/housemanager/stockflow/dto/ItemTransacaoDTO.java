@@ -7,6 +7,6 @@ import java.util.UUID;
 public record ItemTransacaoDTO(
         UUID produtoId,
         BigDecimal valor,
-        Integer quantidade
+        Double quantidade
 ) {
 }

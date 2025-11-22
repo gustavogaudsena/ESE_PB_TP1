@@ -14,7 +14,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -74,7 +73,7 @@ public class TransacaoService {
 
     @Transactional(readOnly = true)
     public Transacao obterPorId(UUID id) {
-        return transacaoRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Transação não encontrada: " + id));
+        return transacaoRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Transação não encontrada"));
     }
 
     @Transactional
@@ -82,7 +81,7 @@ public class TransacaoService {
         Transacao transacao;
 
         Produto produto = produtoRepository.findById(dto.produtoId())
-                .orElseThrow(() -> new NoSuchElementException("Produto não encontrado: " + dto.produtoId()));
+                .orElseThrow(() -> new NoSuchElementException("Produto não encontrado"));
 
         transacao = obterPorId(transacaoId);
 
@@ -107,8 +106,9 @@ public class TransacaoService {
         itens.forEach(i -> {
 
             Produto produto = produtoRepository.findFirstByNome(i.getName()).orElse(null);
+            if (produto == null) {
+                produto = new Produto();
 
-            if (produto != null) {
                 produto.setNome(i.getName());
                 produto.setCategoria(CategoriaDeProduto.GENERICO);
             }
@@ -116,7 +116,7 @@ public class TransacaoService {
             produtoRepository.save(produto);
             ItemTransacao item = new ItemTransacao();
             item.setValor(BigDecimal.valueOf(i.getUnitPrice() != null ? i.getUnitPrice() : i.getTotalPrice()));
-            item.setQuantidade((int) Math.round(i.getQuantity()));
+            item.setQuantidade(i.getQuantity());
             item.setProduto(produto);
 
             transacao.adicionarItemTransacao(item);
@@ -128,13 +128,13 @@ public class TransacaoService {
     }
 
     @Transactional
-    public Transacao removerItemTransacao(UUID transacaoId, @PathVariable UUID itemId) {
+    public Transacao removerItemTransacao(UUID transacaoId, UUID itemId) {
         Transacao transacao = obterPorId(transacaoId);
         ItemTransacao item = transacao.getItensTransacao()
                 .stream()
                 .filter(i -> i.getProduto().getId().equals(itemId))
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("Item não encontrado na transação: " + itemId));
+                .orElseThrow(() -> new NoSuchElementException("Item não encontrado na transação"));
 
         transacao.removerItemTransacao(item);
 
@@ -142,7 +142,13 @@ public class TransacaoService {
     }
 
     @Transactional
-    public ItemTransacao atualizarItemTransacao(UUID transacaoId, @PathVariable UUID itemId, ItemTransacaoDTO dto) {
+    public void deletarTransacaoPorId(UUID transacaoId) {
+        obterPorId(transacaoId);
+        transacaoRepository.deleteById(transacaoId);
+    }
+
+    @Transactional
+    public ItemTransacao atualizarItemTransacao(UUID transacaoId, UUID itemId, ItemTransacaoDTO dto) {
         Transacao transacao = obterPorId(transacaoId);
 
         ItemTransacao item = transacao.getItensTransacao()

@@ -32,7 +32,7 @@ public class ItemTransacao {
     private BigDecimal valor;
 
     @Column(nullable = false)
-    private Integer quantidade;
+    private Double quantidade;
 
     @Transient
     public BigDecimal getValorFinal() {

@@ -73,4 +73,10 @@ public class TransacaoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(item);
     }
 
+    @DeleteMapping("/{transacaoId}")
+    public ResponseEntity<?> deletarTransacaoPorId(@PathVariable UUID transacaoId) {
+        service.deletarTransacaoPorId(transacaoId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
 }
