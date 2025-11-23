@@ -5,23 +5,24 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8000/realms/stockflow
+        issuer-uri: http://keycloak-cluster.stockflow.svc.cluster.local:8000/realms/stockflow
   rabbitmq:
-    host: localhost
+    host: rabbitmq-cluster.stockflow.svc.cluster.local
     port: 5672
-    username: guest
-    password: guest
+    username: ${RABBIT_USER:admin_user}
+    password: ${RABBIT_PASS:admin_pass}
   cloud:
     function:
       definition: aiAnalysisInput
     consul:
-      host: localhost
+      host: consul-node.stockflow.svc.cluster.local
       port: 8500
       discovery:
         register: true
         prefer-ip-address: true
         health-check-path: /actuator/health
         health-check-interval: 5s
+        instance-id: ${spring.application.name}:${server.port}:${random.value[6]}
     stream:
       defaultBinder: rabbit
       bindings:
@@ -30,9 +31,9 @@ spring:
           group: stockflow-service
           content-type: application/json
   datasource:
-    url: jdbc:postgresql://localhost:5432/stockflow
+    url: jdbc:postgresql://postgresql-cluster.stockflow.svc.cluster.local:5432/stockflow
     username: postgres
-    password: 123456
+    password: password
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
