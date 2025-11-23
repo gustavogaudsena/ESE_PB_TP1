@@ -5,7 +5,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-        issuer-uri: http://keycloak-cluster.stockflow.svc.cluster.local:8000/realms/stockflow
+          issuer-uri: ${AUTH_ISSUER_URI:http://localhost:30900/realms/stockflow}
+          jwk-set-uri: http://keycloak-cluster.stockflow.svc.cluster.local:8000/realms/stockflow/protocol/openid-connect/certs
   rabbitmq:
     host: rabbitmq-cluster.stockflow.svc.cluster.local
     port: 5672
