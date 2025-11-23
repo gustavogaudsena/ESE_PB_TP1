@@ -9,10 +9,10 @@ public class CategoriaDeProdutoConverter implements Converter<String, CategoriaD
     @Override
     public CategoriaDeProduto convert(String source) {
         for (CategoriaDeProduto categoria : CategoriaDeProduto.values()) {
-            if (categoria.getNomeExibicao().equalsIgnoreCase(source)) {
+            if (categoria.name().equalsIgnoreCase(source)) {
                 return categoria;
             }
         }
-        throw new IllegalArgumentException("Categoria inválida: " + source);
+        return CategoriaDeProduto.OTHERS;
     }
 }

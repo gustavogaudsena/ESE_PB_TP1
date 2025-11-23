@@ -1,6 +1,7 @@
 package br.com.housemanager.stockflow.service;
 
 
+import br.com.housemanager.stockflow.converter.CategoriaDeProdutoConverter;
 import br.com.housemanager.stockflow.dto.AiAnalyzedItem;
 import br.com.housemanager.stockflow.dto.ItemTransacaoDTO;
 import br.com.housemanager.stockflow.model.*;
@@ -30,6 +31,7 @@ public class TransacaoService {
     private final TransacaoRepository transacaoRepository;
     private final ItemTransacaoRepository itemTransacaoRepository;
     private final ProdutoRepository produtoRepository;
+    private final CategoriaDeProdutoConverter categoriaConverter;
 
     @Transactional(readOnly = true)
     public Page<Transacao> listar(TransacaoFiltro filtro, Integer page, Integer size) {
@@ -100,17 +102,20 @@ public class TransacaoService {
     }
 
     @Transactional
-    public Transacao adicionarTransacaoPorNota(List<AiAnalyzedItem> itens) {
+    public Transacao adicionarTransacaoPorNota(List<AiAnalyzedItem> itens, String userId) {
         Transacao transacao = new Transacao();
 
+        transacao.setUserId(userId);
         itens.forEach(i -> {
 
-            Produto produto = produtoRepository.findFirstByNome(i.getName()).orElse(null);
+            Produto produto = produtoRepository.findFirstByNome(i.getProductType()).orElse(null);
             if (produto == null) {
                 produto = new Produto();
 
-                produto.setNome(i.getName());
-                produto.setCategoria(CategoriaDeProduto.GENERICO);
+                produto.setNome(i.getProductType());
+                CategoriaDeProduto categoria = categoriaConverter.convert(i.getCategory());
+                produto.setCategoria(categoria);
+                produto.setDescricao(i.getName());
             }
 
             produtoRepository.save(produto);

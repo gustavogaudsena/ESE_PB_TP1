@@ -1,7 +1,14 @@
 spring:
   application:
     name: stockflow
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8000/realms/stockflow
   cloud:
+    function:
+      definition: aiAnalysisInput
     consul:
       host: localhost
       port: 8500
@@ -10,6 +17,18 @@ spring:
         prefer-ip-address: true
         health-check-path: /actuator/health
         health-check-interval: 5s
+    stream:
+      defaultBinder: rabbit
+      bindings:
+        aiAnalysisInput-in-0:
+          destination: ai.analysis.completed
+          group: stockflow-service
+          content-type: application/json
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
   datasource:
     url: jdbc:postgresql://localhost:5432/stockflow
     username: postgres
@@ -23,7 +42,7 @@ spring:
         format_sql: true
         hibernate.jdbc.time_zone: America/Sao_Paulo
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
 server:
   port: 8080
 

@@ -19,6 +19,8 @@ public class Produto {
     @Column(nullable = false, length = 80)
     private String nome;
 
+    private String descricao;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private CategoriaDeProduto categoria;

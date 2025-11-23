@@ -8,6 +8,7 @@ import br.com.housemanager.stockflow.model.TransacaoFiltro;
 import br.com.housemanager.stockflow.service.ProdutoService;
 import br.com.housemanager.stockflow.service.TransacaoService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/transacao")
 @RequiredArgsConstructor
+@Slf4j
 public class TransacaoController {
     private final TransacaoService service;
     private final ProdutoService produtoService;
@@ -67,11 +69,6 @@ public class TransacaoController {
         return ResponseEntity.status(HttpStatus.OK).body(item);
     }
 
-    @PostMapping("/nota")
-    public ResponseEntity<Transacao> adicionarTransacaoPorNota(@RequestBody List<AiAnalyzedItem> itens) {
-        Transacao item = service.adicionarTransacaoPorNota(itens);
-        return ResponseEntity.status(HttpStatus.CREATED).body(item);
-    }
 
     @DeleteMapping("/{transacaoId}")
     public ResponseEntity<?> deletarTransacaoPorId(@PathVariable UUID transacaoId) {
