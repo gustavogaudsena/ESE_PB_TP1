@@ -25,9 +25,9 @@ services:
         soft: 65536
         hard: 65536
     ports:
-      - "8999:8999"      # DataNode API (preflight fala com isso)
-      - "9200:9200"      # OpenSearch HTTP (interno; pode deixar só em 127.0.0.1 se quiser)
-      - "9300:9300"      # OpenSearch transport
+      - "8999:8999"
+      - "9200:9200"
+      - "9300:9300"
     networks:
       - graylog
     volumes:
@@ -43,11 +43,9 @@ services:
     entrypoint: "/usr/bin/tini -- /docker-entrypoint.sh"
     environment:
       GRAYLOG_NODE_ID_FILE: "/usr/share/graylog/data/data/node-id"
-      # MESMO SECRET DO DATANODE
       GRAYLOG_PASSWORD_SECRET: "${GRAYLOG_PASSWORD_SECRET:?Please configure GRAYLOG_PASSWORD_SECRET in the .env file}"
       GRAYLOG_ROOT_PASSWORD_SHA2: "${GRAYLOG_ROOT_PASSWORD_SHA2:?Please configure GRAYLOG_ROOT_PASSWORD_SHA2 in the .env file}"
       GRAYLOG_HTTP_BIND_ADDRESS: "0.0.0.0:9000"
-      # você está expondo 7000->9000, então é mais correto usar 7000 aqui
       GRAYLOG_HTTP_EXTERNAL_URI: "http://localhost:9000/"
       GRAYLOG_MONGODB_URI: "mongodb://mongodb:27017/graylog"
     ports:
@@ -56,7 +54,7 @@ services:
       - "5140:5140/tcp"
       - "5555:5555/tcp"
       - "5555:5555/udp"
-      - "9000:9000/tcp"   # UI/API
+      - "9000:9000/tcp"
       - "12201:12201/tcp"
       - "12201:12201/udp"
       - "13301:13301/tcp"
